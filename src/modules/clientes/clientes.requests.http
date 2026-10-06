@@ -1,0 +1,43 @@
+@baseUrl = http://localhost:3000/api
+@clientesUrl = {{baseUrl}}/clientes
+
+
+### Crear cliente
+POST {{clientesUrl}} 
+Content-Type: application/json
+
+{
+  "nombre": "CLIENTE 1"
+}
+
+### Obtener todos los clientes
+
+GET  {{clientesUrl}} 
+
+
+### Obtener un cliente
+
+GET  {{clientesUrl}}/12
+
+
+### Actualizar un cliente
+
+PUT   {{clientesUrl}}/13
+Content-Type: application/json
+
+{
+  "nombre": "EDUARDO RALLO 99"
+}
+
+### Obtener cliente inexistente
+
+GET {{clientesUrl}}/999999
+
+### Crear cliente con nombre vacío
+
+POST {{clientesUrl}}
+Content-Type: application/json
+
+{
+  "nombre": "   "
+}

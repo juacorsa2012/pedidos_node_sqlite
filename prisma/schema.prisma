@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Cliente {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @unique
+  pedidos   Pedido[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("clientes")
+}
+
+model Proveedor {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  pedidos   Pedido[]
+
+  @@map("proveedores")
+}
+
+model Pedido {
+  id            Int       @id @default(autoincrement())
+  unidades      Int
+  producto      String
+  oferta        String?
+  solicitadoPor String?   @map("solicitado_por")
+  observaciones String?
+  proveedorId   Int       @map("proveedor_id")
+  proveedor     Proveedor @relation(fields: [proveedorId], references: [id])
+  clienteId     Int       @map("cliente_id")
+  cliente       Cliente   @relation(fields: [clienteId], references: [id])
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("pedidos")
+}
