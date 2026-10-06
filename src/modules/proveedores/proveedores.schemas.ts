@@ -1,11 +1,11 @@
 import * as z from "zod"
-import { proveedorMessages } from "./proveedores.messages"
+import { proveedorMessages as Message } from "./proveedores.messages"
 
 export const createProveedorSchema = z.object({
   nombre: z
     .string()
     .trim()
-    .min(1, proveedorMessages.nombreRequerido)
+    .min(1, Message.nombreRequerido)
     .transform((v) => v.toUpperCase())
 })
 
