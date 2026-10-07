@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma.js"
 import type { CreateClienteInput, UpdateClienteInput } from "./clientes.schemas.js"
 import { ClienteNoExisteError, ClienteYaExisteError } from "./clientes.errors.js"
-import { Prisma } from "../../../generated/prisma/client"
+import { Prisma } from "../../../generated/prisma/client.js"
 
 class ClienteService {
   async obtenerTodos() {

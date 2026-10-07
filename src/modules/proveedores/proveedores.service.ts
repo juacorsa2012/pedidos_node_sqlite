@@ -1,4 +1,4 @@
-import { Prisma } from "../../../generated/prisma/client"
+import { Prisma } from "../../../generated/prisma/client.js"
 import { prisma } from "../../lib/prisma.js"
 import { ProveedorNoExisteError, ProveedorYaExisteError } from "./proveedores.errors.js"
 import type { CreateProveedorInput, UpdateProveedorInput } from "./proveedores.schemas.js"

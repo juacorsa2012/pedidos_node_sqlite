@@ -1,5 +1,5 @@
 import { pino } from "pino"
-import { env } from "./env"
+import { env } from "./env.js"
 
 export const logger = pino({
   timestamp: pino.stdTimeFunctions.isoTime, // Formato legible: "time":"2023-10-02T12:00:00.000Z"

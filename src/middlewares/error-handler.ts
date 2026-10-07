@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from 'express'
 import { ZodError } from "zod"
 import { StatusCodes } from 'http-status-codes'
-import { AppError } from "../common/errors/custom-errors"
-import { logger } from '../config/logger'
+import { AppError } from "../common/errors/custom-errors.js"
+import { logger } from '../config/logger.js'
 
 export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   // Custom application errors

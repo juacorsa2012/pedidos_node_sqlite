@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes"
-import { AppError } from "../../common/errors/custom-errors"
-import { clienteMessages as Message } from "./clientes.messages"
+import { AppError } from "../../common/errors/custom-errors.js"
+import { clienteMessages as Message } from "./clientes.messages.js"
 
 export class ClienteYaExisteError extends AppError {
   constructor() {

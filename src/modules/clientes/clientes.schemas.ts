@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { clienteMessages } from "./clientes.messages"
+import { clienteMessages } from "./clientes.messages.js"
 
 export const createClienteSchema = z.object({
   nombre: z

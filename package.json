@@ -8,7 +8,9 @@
     "build": "prisma generate && tsc",
     "start": "node dist/index.js",
     "db:migrate": "npx prisma migrate dev --name migration",
-    "db:generate": "npx prisma generate"
+    "db:generate": "npx prisma generate",
+    "postinstall": "prisma generate",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
