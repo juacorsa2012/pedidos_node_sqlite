@@ -1,10 +1,10 @@
 import type { Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
-import { createClienteSchema, idParamSchema, updateClienteSchema } from "./clientes.schemas"
-import { clienteMessages as Message } from "./clientes.messages"
-import { logger } from "../../config/logger"
-import { sendResponse } from "../../common/utils/response"
-import clientesService from "./clientes.service"
+import { createClienteSchema, idParamSchema, updateClienteSchema } from "./clientes.schemas.js"
+import { clienteMessages as Message } from "./clientes.messages.js"
+import { logger } from "../../config/logger.js"
+import { sendResponse } from "../../common/utils/response.js"
+import clientesService from "./clientes.service.js"
 
 type ClienteService = typeof clientesService
 
@@ -41,13 +41,13 @@ class ClienteController {
 
     const cliente = await this.clienteService.actualizar(id, data)
 
-    logger.info(Message.clienteActualizadoConExito)
+    logger.info(Message.clienteActualizado)
 
     return sendResponse({
       res,
       statusCode: StatusCodes.OK,
       data: cliente,
-      message: Message.clienteActualizadoConExito
+      message: Message.clienteActualizado
     })
   }
   
@@ -55,13 +55,13 @@ class ClienteController {
     const data = createClienteSchema.parse(req.body)
     const cliente = await this.clienteService.registrar(data)
     
-    logger.info(Message.clienteRegistradoConExito)
+    logger.info(Message.clienteRegistrado)
 
     return sendResponse({
       res,
       statusCode: StatusCodes.CREATED,
       data: cliente,
-      message: Message.clienteRegistradoConExito
+      message: Message.clienteRegistrado
     })
   }
 }

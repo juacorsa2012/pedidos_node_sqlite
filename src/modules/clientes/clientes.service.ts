@@ -1,6 +1,6 @@
-import { prisma } from "../../lib/prisma"
-import type { CreateClienteInput, UpdateClienteInput } from "./clientes.schemas"
-import { ClienteNoExisteError, ClienteYaExisteError } from "./clientes.errors"
+import { prisma } from "../../lib/prisma.js"
+import type { CreateClienteInput, UpdateClienteInput } from "./clientes.schemas.js"
+import { ClienteNoExisteError, ClienteYaExisteError } from "./clientes.errors.js"
 import { Prisma } from "../../../generated/prisma/client"
 
 class ClienteService {

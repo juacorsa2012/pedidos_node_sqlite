@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from "express"
-import clienteController from "./clientes.controller"
+import clienteController from "./clientes.controller.js"
 
 const router = Router()
 

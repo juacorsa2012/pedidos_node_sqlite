@@ -1,0 +1,12 @@
+@baseUrl = http://localhost:3000/api
+@ProveedoresUrl = {{baseUrl}}/proveedores
+
+### Obtener todos los clientes
+
+GET  {{ProveedoresUrl}}
+
+
+### Obtener un cliente
+
+GET  {{ProveedoresUrl}}/1
+

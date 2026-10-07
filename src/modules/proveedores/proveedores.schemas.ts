@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { proveedorMessages as Message } from "./proveedores.messages"
+import { proveedorMessages as Message } from "./proveedores.messages.js"
 
 export const createProveedorSchema = z.object({
   nombre: z
