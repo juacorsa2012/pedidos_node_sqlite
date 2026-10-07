@@ -39,7 +39,7 @@ class ProveedorService {
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") throw new ProveedorYaExisteError()
-      if (error.code === "P2025") throw new ProveedorYaExisteError()
+      if (error.code === "P2025") throw new ProveedorNoExisteError()
     }
     throw error
     }

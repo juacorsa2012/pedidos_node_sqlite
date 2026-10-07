@@ -5,8 +5,13 @@ dotenv.config({ path: ".env" })
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  PORT: z.coerce.number(),  
-  DATABASE_URL: z.string(),
+  PORT: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(65535)
+    .default(3000), 
+  DATABASE_URL: z.string().min(1)
 })
 
 const parsedEnv = envSchema.safeParse(process.env)

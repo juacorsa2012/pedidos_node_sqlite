@@ -9,7 +9,7 @@ export const createClienteSchema = z.object({
     .transform((v) => v.toUpperCase())
 })
 
-export const updateClienteSchema = createClienteSchema
+export const updateClienteSchema = createClienteSchema.partial()
 
 export const idParamSchema = z.object({
   id: z.coerce.number().int().positive().max(2_147_483_647) // límite de Int en Prisma/PostgreSQL

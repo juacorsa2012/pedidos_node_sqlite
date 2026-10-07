@@ -58,3 +58,6 @@ process.on("uncaughtException", (err) => {
   logger.error({ err }, "Uncaught Exception")
   void shutdown("uncaughtException", 1)
 })
+
+
+// npm run db:migrate -- --name crear_clientes
