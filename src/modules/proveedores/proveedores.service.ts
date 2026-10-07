@@ -3,7 +3,6 @@ import { prisma } from "../../lib/prisma.js"
 import { ProveedorNoExisteError, ProveedorYaExisteError } from "./proveedores.errors.js"
 import type { CreateProveedorInput, UpdateProveedorInput } from "./proveedores.schemas.js"
 
-
 class ProveedorService {
   async obtenerTodos() {
     return prisma.proveedor.findMany({

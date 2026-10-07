@@ -33,16 +33,18 @@ class ClienteService {
   }
 }
 
-async registrar({ nombre }: CreateClienteInput) {
+  async registrar({ nombre }: CreateClienteInput) {
   try {
     return await prisma.cliente.create({ data: { nombre } })
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      throw new ClienteYaExisteError()
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+       if (error.code === "P2002") {
+        throw new ClienteYaExisteError()
+      }    
     }
     throw error
   }
-  }
+ }
 }
 
 export default new ClienteService()
