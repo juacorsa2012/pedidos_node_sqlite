@@ -228,13 +228,4 @@ describe("POST /api/clientes", () => {
     expect(response.body.errors[0].field).toBe("nombre")
     expect(response.body.errors[0].message).toBe(Message.nombreRequerido)
   })
-
-
-
-
-
-
-
-
-
 })
