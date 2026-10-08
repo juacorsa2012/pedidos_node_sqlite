@@ -3,8 +3,8 @@ import { env } from "./config/env.js"
 import { logger } from "./config/logger.js"
 import { prisma } from "./lib/prisma.js"
 
-const server = app.listen(env.PORT, () => {
-  logger.info(`Servidor ejecutado en http://localhost:${env.PORT}`)
+export const server = app.listen(env.PORT, () => {
+  logger.info(`Servidor ejecutandose en http://localhost:${env.PORT}`)
 })
 
 server.on("error", (err: NodeJS.ErrnoException) => {

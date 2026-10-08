@@ -11,9 +11,9 @@
     "db:generate": "npx prisma generate",
     "postinstall": "prisma generate",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test": "clear && vitest run",
+    "test:watch": "clear && vitest --watch",
+    "test:coverage": "clear && vitest run --coverage"
   },
   "keywords": [],
   "author": "",
