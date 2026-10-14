@@ -21,9 +21,12 @@ El proyecto está planteado siguiendo una estructura modular y separando respons
 ```text
 src/
 ├── common/
+│   ├── errors/
+│   │   └── custom-errors.ts
+│   ├── messages.ts
 │   └── utils/
 │       ├── response.ts
-│       └── ...
+│       └── uptime.ts
 │
 ├── config/
 │   ├── env.ts
@@ -43,6 +46,13 @@ src/
 │   │   ├── clientes.routes.ts
 │   │   ├── clientes.schemas.ts
 │   │   └── clientes.service.ts
+│   ├── pedidos/
+│   │   ├── pedidos.controller.ts
+│   │   ├── pedidos.errors.ts
+│   │   ├── pedidos.messages.ts
+│   │   ├── pedidos.routes.ts
+│   │   ├── pedidos.schemas.ts
+│   │   └── pedidos.service.ts
 │   │
 │   └── proveedores/
 │       ├── proveedores.controller.ts
@@ -52,13 +62,16 @@ src/
 │       ├── proveedores.schemas.ts
 │       └── proveedores.service.ts
 │
-├── app.ts
-└── index.ts
+├── server.ts
+└── app.ts
 
 tests/
 ├── unit/
 │   ├── clientes.service.test.ts
 │   └── proveedores.service.test.ts
+└── integration/
+    ├── clientes.routes.test.ts
+    └── proveedores.routes.test.ts
 ```
 
 La organización por módulos permite mantener juntas las funcionalidades relacionadas con cada entidad de negocio.
@@ -108,7 +121,7 @@ NODE_ENV=development
 PAGE_SIZE_MAX=100
 ```
 
-Las variables de entorno se validan mediante **Zod** al iniciar la aplicación. `PAGE_SIZE_MAX` limita cuántos clientes se pueden solicitar por página.
+Las variables de entorno se validan mediante **Zod** al iniciar la aplicación. `PAGE_SIZE_MAX` establece el tamaño máximo de página para clientes, proveedores y pedidos.
 
 ## 🗄️ Base de datos
 
@@ -151,11 +164,10 @@ Respuesta aproximada:
 ```json
 {
   "success": true,
+  "status": "OK",
   "message": "API funcionando correctamente",
-  "data": {
-    "uptime": 12.34,
-    "timestamp": "2026-10-07T..."
-  }
+  "uptime": "12s",
+  "timestamp": "2026-10-14T..."
 }
 ```
 
@@ -163,25 +175,42 @@ Respuesta aproximada:
 
 ### Clientes
 
-| Método | Endpoint            | Descripción                |
-| ------ | ------------------- | -------------------------- |
-| GET    | `/api/clientes?page=1&pageSize=10` | Obtener una página de clientes |
-| GET    | `/api/clientes/:id` | Obtener un cliente por ID  |
-| POST   | `/api/clientes`     | Registrar un cliente       |
-| PATCH  | `/api/clientes/:id` | Actualizar un cliente      |
+| Método | Endpoint | Descripción |
+| ------ | -------- | ----------- |
+| GET | `/api/clientes?page=1&pageSize=10` | Obtener una página de clientes |
+| GET | `/api/clientes/:id` | Obtener un cliente por ID |
+| POST | `/api/clientes` | Registrar un cliente |
+| PUT | `/api/clientes/:id` | Actualizar un cliente |
 
 ### Proveedores
 
-| Método | Endpoint               | Descripción                   |
-| ------ | ---------------------- | ----------------------------- |
-| GET    | `/api/proveedores?page=1&pageSize=10` | Obtener una página de proveedores |
-| GET    | `/api/proveedores/:id` | Obtener un proveedor por ID   |
-| POST   | `/api/proveedores`     | Registrar un proveedor        |
-| PATCH  | `/api/proveedores/:id` | Actualizar un proveedor       |
+| Método | Endpoint | Descripción |
+| ------ | -------- | ----------- |
+| GET | `/api/proveedores?page=1&pageSize=10` | Obtener una página de proveedores |
+| GET | `/api/proveedores/:id` | Obtener un proveedor por ID |
+| POST | `/api/proveedores` | Registrar un proveedor |
+| PUT | `/api/proveedores/:id` | Actualizar un proveedor |
+
+### Pedidos
+
+| Método | Endpoint | Descripción |
+| ------ | -------- | ----------- |
+| GET | `/api/pedidos?page=1&pageSize=10` | Obtener una página de pedidos |
+| GET | `/api/pedidos?page=1&pageSize=10&clienteId=1` | Filtrar pedidos por cliente |
+| GET | `/api/pedidos?page=1&pageSize=10&proveedorId=1` | Filtrar pedidos por proveedor |
+| GET | `/api/pedidos/:id` | Obtener un pedido por ID |
+| POST | `/api/pedidos` | Registrar un pedido |
+| PUT | `/api/pedidos/:id` | Actualizar un pedido |
+
+Los listados requieren `page` y `pageSize`. El tamaño no puede superar `PAGE_SIZE_MAX`. Las respuestas incluyen los datos y los metadatos de paginación (`page`, `pageSize`, `total` y `totalPages`).
+
+Los cuerpos de creación y actualización de pedidos aceptan `unidades`, `producto`, `clienteId` y `proveedorId`; `oferta`, `solicitadoPor` y `observaciones` son opcionales y aceptan `null`.
+
+No hay endpoints para eliminar proveedores ni pedidos.
 
 ## 🧪 Tests
 
-Los tests unitarios se realizan con **Vitest**.
+Los tests unitarios y de integración se realizan con **Vitest**. Las pruebas de integración actuales cubren clientes y proveedores mediante sus rutas HTTP; pedidos todavía no tiene tests.
 
 Para ejecutar todos los tests:
 
@@ -203,12 +232,11 @@ npm run typecheck
 
 ### ¿Qué se está probando?
 
-Los tests de los servicios comprueban principalmente:
+Los tests unitarios de los servicios comprueban principalmente:
 
 * Operaciones correctas con Prisma.
 * Obtención de registros.
-* Creación de clientes y proveedores.
-* Actualización de registros.
+* Creación y actualización de clientes y proveedores.
 * Comprobación de los parámetros enviados a Prisma.
 * Conversión de errores de Prisma a errores de dominio.
 * `P2002` → entidad duplicada.
@@ -256,13 +284,11 @@ Gestionan la comunicación HTTP:
 
 Contienen la lógica de negocio.
 
-Por ejemplo, `ClienteService` se encarga de:
+Los servicios se encargan de:
 
-* obtener clientes
-* buscar un cliente por ID
-* registrar clientes
-* actualizar clientes
-* traducir determinados errores de Prisma a errores de dominio
+* realizar las operaciones de negocio de cada módulo
+* consultar y modificar datos mediante Prisma
+* traducir errores conocidos de persistencia a errores de dominio
 
 ### Schemas
 
@@ -290,9 +316,15 @@ ClienteNoExisteError
 
 ProveedorYaExisteError
 ProveedorNoExisteError
+
+PedidoNoExisteError
+ClientePedidoNoExisteError
+ProveedorPedidoNoExisteError
 ```
 
 Esto evita depender directamente de errores específicos de Prisma en las capas superiores.
+
+Los pedidos requieren que existan tanto el cliente como el proveedor asociados. La base de datos también define claves foráneas para esas relaciones.
 
 ## 🛡️ Gestión de errores
 
@@ -325,7 +357,7 @@ Las respuestas utilizan un formato común:
 ```json
 {
   "success": true,
-  "message": "Cliente registrado correctamente",
+"message": "Cliente registrado con éxito",
   "data": {
     "id": 1,
     "nombre": "CLIENTE 1"
@@ -338,8 +370,7 @@ En caso de error:
 ```json
 {
   "success": false,
-  "message": "El cliente no existe",
-  "data": null
+  "message": "El cliente no existe"
 }
 ```
 
@@ -405,18 +436,16 @@ Los principales objetivos son:
 * Validar entradas con Zod.
 * Utilizar Prisma como ORM.
 * Gestionar errores de forma centralizada.
-* Escribir tests unitarios con Vitest.
+* Escribir tests unitarios y de integración con Vitest.
 * Mantener un código sencillo y fácil de mantener.
 
 ## 📌 Próximos pasos
 
-Entre las funcionalidades previstas se encuentran:
+Mejoras previstas:
 
-* Gestión de pedidos.
-* Tests de integración con Supertest.
+* Tests unitarios y de integración del módulo de pedidos.
 * Tests de los controladores.
 * Mejoras en la cobertura de tests.
-* Documentación de la API.
 * Posible integración con PostgreSQL.
 
 ## 📄 Licencia
