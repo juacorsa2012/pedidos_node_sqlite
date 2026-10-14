@@ -68,9 +68,11 @@ src/
 tests/
 ├── unit/
 │   ├── clientes.service.test.ts
+│   ├── pedidos.service.test.ts
 │   └── proveedores.service.test.ts
 └── integration/
     ├── clientes.routes.test.ts
+    ├── pedidos.routes.test.ts
     └── proveedores.routes.test.ts
 ```
 
@@ -210,7 +212,7 @@ No hay endpoints para eliminar proveedores ni pedidos.
 
 ## 🧪 Tests
 
-Los tests unitarios y de integración se realizan con **Vitest**. Las pruebas de integración actuales cubren clientes y proveedores mediante sus rutas HTTP; pedidos todavía no tiene tests.
+Los tests unitarios y de integración se realizan con **Vitest**. Los tests unitarios cubren los servicios de los tres módulos; los de integración ejercitan las rutas HTTP de clientes, proveedores y pedidos con la base de datos de test.
 
 Para ejecutar todos los tests:
 
@@ -243,6 +245,8 @@ Los tests unitarios de los servicios comprueban principalmente:
 * `P2025` → entidad inexistente.
 
 Los servicios utilizan mocks de Prisma, por lo que estos tests no necesitan acceder a la base de datos real.
+
+Los archivos de test se ejecutan en serie porque las pruebas de integración comparten la misma base de datos SQLite.
 
 ## 🧱 Arquitectura
 
@@ -357,7 +361,7 @@ Las respuestas utilizan un formato común:
 ```json
 {
   "success": true,
-"message": "Cliente registrado con éxito",
+  "message": "Cliente registrado con éxito",
   "data": {
     "id": 1,
     "nombre": "CLIENTE 1"
@@ -443,7 +447,6 @@ Los principales objetivos son:
 
 Mejoras previstas:
 
-* Tests unitarios y de integración del módulo de pedidos.
 * Tests de los controladores.
 * Mejoras en la cobertura de tests.
 * Posible integración con PostgreSQL.
