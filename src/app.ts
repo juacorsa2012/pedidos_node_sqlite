@@ -2,7 +2,9 @@ import express from "express"
 import cors from "cors"
 import type { Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
+import { env } from "./config/env.js"
 import { formatUptime } from "./common/utils/uptime.js"
+import { sendResponse } from "./common/utils/response.js"
 import { errorHandler } from "./middlewares/error-handler.js"
 import { AppError } from "./common/errors/custom-errors.js"
 import clientesRoutes from "./modules/clientes/clientes.routes.js"
@@ -13,18 +15,22 @@ export const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cors())
+app.use(cors({ origin: env.CORS_ORIGIN }))
 
 app.use("/api/clientes", clientesRoutes)
 app.use("/api/proveedores", proveedoresRoutes)
 app.use("/api/pedidos", pedidosRoutes)
 
 app.get("/health", (_: Request, res: Response) => {
-  return res.status(StatusCodes.OK).json({
-    status: "OK",
-    message: "API funcionando correctamente",    
-    uptime: formatUptime(process.uptime()),
-    timestamp: new Date().toISOString(),
+  return sendResponse({
+    res,
+    statusCode: StatusCodes.OK,
+    message: "API funcionando correctamente",
+    data: {
+      status: "OK",
+      uptime: formatUptime(process.uptime()),
+      timestamp: new Date().toISOString(),
+    },
   })
 })
 

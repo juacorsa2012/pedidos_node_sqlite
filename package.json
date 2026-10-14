@@ -9,11 +9,13 @@
     "start": "node dist/src/server.js",
     "db:migrate": "prisma migrate dev",
     "db:generate": "npx prisma generate",
+    "db:seed": "prisma db seed --config prisma7.config.ts",
     "postinstall": "prisma generate",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest --watch",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:load": "node scripts/load-test.mjs"
   },
   "keywords": [],
   "author": "",

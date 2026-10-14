@@ -120,10 +120,11 @@ Crea un archivo `.env` en la raíz del proyecto:
 PORT=3000
 DATABASE_URL="file:./dev.db"
 NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173
 PAGE_SIZE_MAX=100
 ```
 
-Las variables de entorno se validan mediante **Zod** al iniciar la aplicación. `PAGE_SIZE_MAX` establece el tamaño máximo de página para clientes, proveedores y pedidos.
+Las variables de entorno se validan mediante **Zod** al iniciar la aplicación. `CORS_ORIGIN` define el origen del frontend permitido por CORS y, si se omite, usa `http://localhost:5173`. `PAGE_SIZE_MAX` establece el tamaño máximo de página para clientes, proveedores y pedidos.
 
 ## 🗄️ Base de datos
 
@@ -140,6 +141,14 @@ Para ejecutar las migraciones:
 ```bash
 npm run db:migrate
 ```
+
+Para cargar datos de demostración (100 clientes, 10 proveedores y 20 pedidos):
+
+```bash
+npm run db:seed
+```
+
+El seed se puede ejecutar más de una vez sin duplicar esos registros y está bloqueado en producción.
 
 ## ▶️ Ejecutar el proyecto
 
