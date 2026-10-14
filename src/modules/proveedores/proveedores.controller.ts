@@ -13,8 +13,8 @@ class ProveedorController {
   constructor(private proveedorService: ProveedorService) {}
 
   async obtenerTodos(req: Request, res: Response): Promise<Response> {
-    const { page, pageSize } = listProveedoresQuerySchema.parse(req.query)
-    const resultado = await this.proveedorService.obtenerTodos(page, pageSize)
+    const query = listProveedoresQuerySchema.parse(req.query)
+    const resultado = await this.proveedorService.obtenerTodos(query)
     logger.info({ total: resultado.data.length }, "Proveedores obtenidos")
     
     return sendResponse({
@@ -25,7 +25,7 @@ class ProveedorController {
     })
   }
 
-  obtenerPorId = async (req: Request, res: Response): Promise<Response> => {
+  async obtenerPorId(req: Request, res: Response): Promise<Response> {
     const { id } = idParamSchema.parse(req.params)
     const proveedor = await this.proveedorService.obtenerPorId(id)
     logger.info({ proveedorId: proveedor.id }, "Proveedor obtenido")

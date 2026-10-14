@@ -46,7 +46,7 @@ describe("ProveedorService.obtenerTodos", () => {
 
     vi.mocked(prisma.$transaction).mockResolvedValue([proveedores, 12] as never)
 
-    const resultado = await proveedorService.obtenerTodos(2, 2)
+    const resultado = await proveedorService.obtenerTodos({ page: 2, pageSize: 2 })
 
     expect(resultado).toEqual({
       data: proveedores,

@@ -7,6 +7,7 @@ import { errorHandler } from "./middlewares/error-handler.js"
 import { AppError } from "./common/errors/custom-errors.js"
 import clientesRoutes from "./modules/clientes/clientes.routes.js"
 import proveedoresRoutes from "./modules/proveedores/proveedores.routes.js"
+import pedidosRoutes from "./modules/pedidos/pedidos.routes.js"
 
 export const app = express()
 
@@ -16,6 +17,7 @@ app.use(cors())
 
 app.use("/api/clientes", clientesRoutes)
 app.use("/api/proveedores", proveedoresRoutes)
+app.use("/api/pedidos", pedidosRoutes)
 
 app.get("/health", (_: Request, res: Response) => {
   return res.status(StatusCodes.OK).json({

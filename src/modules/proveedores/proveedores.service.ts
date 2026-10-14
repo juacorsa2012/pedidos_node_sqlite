@@ -1,10 +1,10 @@
 import { Prisma } from "../../../generated/prisma/client.js"
 import { prisma } from "../../lib/prisma.js"
 import { ProveedorNoExisteError, ProveedorYaExisteError } from "./proveedores.errors.js"
-import type { CreateProveedorInput, UpdateProveedorInput } from "./proveedores.schemas.js"
+import type { CreateProveedorInput, ListProveedoresQuery, UpdateProveedorInput } from "./proveedores.schemas.js"
 
 class ProveedorService {
-  async obtenerTodos(page: number, pageSize: number) {
+  async obtenerTodos({ page, pageSize }: ListProveedoresQuery) {
     const [proveedores, total] = await prisma.$transaction([
       prisma.proveedor.findMany({
         orderBy: { nombre: "asc" },
@@ -27,10 +27,10 @@ class ProveedorService {
 
   async obtenerPorId(id: number) {
     const proveedor = await prisma.proveedor.findUnique({ where: { id } })
-    if (!proveedor) throw new ProveedorNoExisteError()      
+    if (!proveedor) throw new ProveedorNoExisteError()
     return proveedor
   }
-  
+
   async registrar({ nombre }: CreateProveedorInput) {
     try {
       return await prisma.proveedor.create({ data: { nombre } })
@@ -42,20 +42,20 @@ class ProveedorService {
     }
   }
 
- async actualizar(id: number, { nombre }: UpdateProveedorInput) {
-  try {
-    return await prisma.proveedor.update({
-      where: { id },
-      data: { nombre }
-    })
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") throw new ProveedorYaExisteError()
-      if (error.code === "P2025") throw new ProveedorNoExisteError()
+  async actualizar(id: number, { nombre }: UpdateProveedorInput) {
+    try {
+      return await prisma.proveedor.update({
+        where: { id },
+        data: { nombre },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") throw new ProveedorYaExisteError()
+        if (error.code === "P2025") throw new ProveedorNoExisteError()
+      }
+      throw error
     }
-    throw error
-    }
-  }  
+  }
 }
 
 export default new ProveedorService()

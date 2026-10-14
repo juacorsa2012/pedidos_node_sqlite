@@ -1,10 +1,10 @@
 import { prisma } from "../../lib/prisma.js"
-import type { CreateClienteInput, UpdateClienteInput } from "./clientes.schemas.js"
+import type { CreateClienteInput, ListClientesQuery, UpdateClienteInput } from "./clientes.schemas.js"
 import { ClienteNoExisteError, ClienteYaExisteError } from "./clientes.errors.js"
 import { Prisma } from "../../../generated/prisma/client.js"
 
 class ClienteService {
-  async obtenerTodos(page: number, pageSize: number) {
+  async obtenerTodos({ page, pageSize }: ListClientesQuery) {
     const [clientes, total] = await prisma.$transaction([
       prisma.cliente.findMany({
         orderBy: { nombre: "asc" },

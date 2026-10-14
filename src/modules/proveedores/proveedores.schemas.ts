@@ -23,3 +23,4 @@ export const idParamSchema = z.object({
 
 export type CreateProveedorInput = z.infer<typeof createProveedorSchema>
 export type UpdateProveedorInput = z.infer<typeof updateProveedorSchema>
+export type ListProveedoresQuery = z.infer<typeof listProveedoresQuerySchema>

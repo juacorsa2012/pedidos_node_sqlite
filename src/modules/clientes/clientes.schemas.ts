@@ -25,3 +25,4 @@ export const idParamSchema = z.object({
 
 export type CreateClienteInput = z.infer<typeof createClienteSchema>
 export type UpdateClienteInput = z.infer<typeof updateClienteSchema>
+export type ListClientesQuery = z.infer<typeof listClientesQuerySchema>

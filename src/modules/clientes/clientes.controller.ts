@@ -12,8 +12,8 @@ class ClienteController {
   constructor(private clienteService: ClienteService) {}
 
   async obtenerTodos(req: Request, res: Response): Promise<Response> {
-    const { page, pageSize } = listClientesQuerySchema.parse(req.query)
-    const resultado = await this.clienteService.obtenerTodos(page, pageSize)
+    const query = listClientesQuerySchema.parse(req.query)
+    const resultado = await this.clienteService.obtenerTodos(query)
 
     logger.info(`${resultado.data.length} clientes obtenidos correctamente`)
     

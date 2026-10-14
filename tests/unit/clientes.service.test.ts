@@ -107,7 +107,7 @@ describe("ClienteService.obtenerTodos", () => {
     ]
     vi.mocked(prisma.$transaction).mockResolvedValue([clientes, 12] as never)
 
-    const resultado = await clienteService.obtenerTodos(2, 2)
+    const resultado = await clienteService.obtenerTodos({ page: 2, pageSize: 2 })
 
     expect(resultado).toEqual({
       data: clientes,
@@ -130,7 +130,7 @@ describe("ClienteService.obtenerTodos", () => {
   it("debería devolver un array vacío si no hay clientes", async () => {
     vi.mocked(prisma.$transaction).mockResolvedValue([[], 0] as never)
 
-    const resultado = await clienteService.obtenerTodos(1, 10)
+    const resultado = await clienteService.obtenerTodos({ page: 1, pageSize: 10 })
 
     expect(resultado).toEqual({
       data: [],
