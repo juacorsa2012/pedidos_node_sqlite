@@ -105,9 +105,10 @@ Crea un archivo `.env` en la raíz del proyecto:
 PORT=3000
 DATABASE_URL="file:./dev.db"
 NODE_ENV=development
+PAGE_SIZE_MAX=100
 ```
 
-Las variables de entorno se validan mediante **Zod** al iniciar la aplicación.
+Las variables de entorno se validan mediante **Zod** al iniciar la aplicación. `PAGE_SIZE_MAX` limita cuántos clientes se pueden solicitar por página.
 
 ## 🗄️ Base de datos
 
@@ -164,7 +165,7 @@ Respuesta aproximada:
 
 | Método | Endpoint            | Descripción                |
 | ------ | ------------------- | -------------------------- |
-| GET    | `/api/clientes`     | Obtener todos los clientes |
+| GET    | `/api/clientes?page=1&pageSize=10` | Obtener una página de clientes |
 | GET    | `/api/clientes/:id` | Obtener un cliente por ID  |
 | POST   | `/api/clientes`     | Registrar un cliente       |
 | PATCH  | `/api/clientes/:id` | Actualizar un cliente      |
@@ -173,7 +174,7 @@ Respuesta aproximada:
 
 | Método | Endpoint               | Descripción                   |
 | ------ | ---------------------- | ----------------------------- |
-| GET    | `/api/proveedores`     | Obtener todos los proveedores |
+| GET    | `/api/proveedores?page=1&pageSize=10` | Obtener una página de proveedores |
 | GET    | `/api/proveedores/:id` | Obtener un proveedor por ID   |
 | POST   | `/api/proveedores`     | Registrar un proveedor        |
 | PATCH  | `/api/proveedores/:id` | Actualizar un proveedor       |

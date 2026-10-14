@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes"
 import { sendResponse } from "../../common/utils/response.js"
 import { logger } from "../../config/logger.js"
 import proveedoresService from "./proveedores.service.js"
-import { createProveedorSchema, idParamSchema, updateProveedorSchema } from "./proveedores.schemas.js"
+import { createProveedorSchema, idParamSchema, listProveedoresQuerySchema, updateProveedorSchema } from "./proveedores.schemas.js"
 import { proveedorMessages as Message  } from "./proveedores.messages.js"
 
 
@@ -12,11 +12,17 @@ type ProveedorService = typeof proveedoresService
 class ProveedorController {
   constructor(private proveedorService: ProveedorService) {}
 
-  async obtenerTodos(_req: Request, res: Response): Promise<Response> {
-    const proveedores = await this.proveedorService.obtenerTodos()
-    logger.info({ total: proveedores.length }, "Proveedores obtenidos")
+  async obtenerTodos(req: Request, res: Response): Promise<Response> {
+    const { page, pageSize } = listProveedoresQuerySchema.parse(req.query)
+    const resultado = await this.proveedorService.obtenerTodos(page, pageSize)
+    logger.info({ total: resultado.data.length }, "Proveedores obtenidos")
     
-    return sendResponse({ res, statusCode: StatusCodes.OK, data: proveedores })
+    return sendResponse({
+      res,
+      statusCode: StatusCodes.OK,
+      data: resultado.data,
+      pagination: resultado.pagination,
+    })
   }
 
   obtenerPorId = async (req: Request, res: Response): Promise<Response> => {

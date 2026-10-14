@@ -3,7 +3,7 @@
 
 ### Obtener todos los clientes
 
-GET  {{ProveedoresUrl}}
+GET  {{ProveedoresUrl}}?page=1&pageSize=10
 
 
 ### Obtener un cliente

@@ -35,11 +35,13 @@ model Pedido {
   solicitadoPor String?   @map("solicitado_por")
   observaciones String?
   proveedorId   Int       @map("proveedor_id")
-  proveedor     Proveedor @relation(fields: [proveedorId], references: [id])
+  proveedor     Proveedor @relation(fields: [proveedorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   clienteId     Int       @map("cliente_id")
-  cliente       Cliente   @relation(fields: [clienteId], references: [id])
+  cliente       Cliente   @relation(fields: [clienteId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
+  @@index([proveedorId])
+  @@index([clienteId])
   @@map("pedidos")
 }

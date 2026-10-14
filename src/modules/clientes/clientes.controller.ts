@@ -1,6 +1,6 @@
 import type { Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
-import { createClienteSchema, idParamSchema, updateClienteSchema } from "./clientes.schemas.js"
+import { createClienteSchema, idParamSchema, listClientesQuerySchema, updateClienteSchema } from "./clientes.schemas.js"
 import { clienteMessages as Message } from "./clientes.messages.js"
 import { logger } from "../../config/logger.js"
 import { sendResponse } from "../../common/utils/response.js"
@@ -11,15 +11,17 @@ type ClienteService = typeof clientesService
 class ClienteController {
   constructor(private clienteService: ClienteService) {}
 
-  async obtenerTodos(_req: Request, res: Response): Promise<Response> {
-    const clientes = await this.clienteService.obtenerTodos()
+  async obtenerTodos(req: Request, res: Response): Promise<Response> {
+    const { page, pageSize } = listClientesQuerySchema.parse(req.query)
+    const resultado = await this.clienteService.obtenerTodos(page, pageSize)
 
-    logger.info(`${clientes.length} clientes obtenidos correctamente`)
+    logger.info(`${resultado.data.length} clientes obtenidos correctamente`)
     
     return sendResponse({
       res,
       statusCode: StatusCodes.OK,
-      data: clientes
+      data: resultado.data,
+      pagination: resultado.pagination,
     })
   }
 

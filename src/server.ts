@@ -3,61 +3,76 @@ import { env } from "./config/env.js"
 import { logger } from "./config/logger.js"
 import { prisma } from "./lib/prisma.js"
 
+const SHUTDOWN_TIMEOUT_MS = 10_000
+
 export const server = app.listen(env.PORT, () => {
-  logger.info(`Servidor ejecutandose en http://localhost:${env.PORT}`)
+  logger.info(`Servidor ejecutándose en http://localhost:${env.PORT}`)
 })
 
 server.on("error", (err: NodeJS.ErrnoException) => {
   if (err.code === "EADDRINUSE") {
-    logger.error(`Puerto ${env.PORT} en uso`)
+    logger.error(`El puerto ${env.PORT} ya está en uso`)
   } else {
-    logger.error({ err }, "Error de servidor")
+    logger.error({ err }, "Error del servidor HTTP")
   }
-  process.exit(1)
+
+  process.exitCode = 1
+  void shutdown("Error del servidor")
 })
 
-const SHUTDOWN_TIMEOUT_MS = 10_000
 let shuttingDown = false
 
-const shutdown = async (motivo: string, exitCode = 0) => {
+async function shutdown(reason: string, exitCode = 0): Promise<void> {
   if (shuttingDown) return
   shuttingDown = true
-  logger.info(`${motivo}: cerrando servidor...`)
+  process.exitCode = exitCode
 
-  // Si algo impide el cierre, salir igualmente
-  const forzar = setTimeout(() => {
-    logger.error("Cierre forzado por timeout")
-    process.exit(1)
+  logger.info(`${reason}: cerrando servidor...`)
+
+  const forceCloseTimer = setTimeout(() => {
+    logger.error("Se agotó el tiempo de cierre; cerrando conexiones activas")
+    server.closeAllConnections()
   }, SHUTDOWN_TIMEOUT_MS)
-  forzar.unref()
 
   try {
     await new Promise<void>((resolve, reject) => {
-      server.close((err) => (err ? reject(err) : resolve()))
+      server.close((err: NodeJS.ErrnoException | undefined) => {
+        if (err?.code === "ERR_SERVER_NOT_RUNNING") {
+          resolve()
+          return
+        }
+        if (err) reject(err)
+        else resolve()
+      })
+      // Detiene solicitudes nuevas y no espera a conexiones keep-alive inactivas.
       server.closeIdleConnections()
     })
-    await prisma.$disconnect()
-    logger.info("Servidor cerrado")
-    process.exit(exitCode)
+
   } catch (err) {
-    logger.error({ err }, "Error durante el cierre")
-    process.exit(1)
+    process.exitCode = 1
+    logger.error({ err }, "Error al cerrar el servidor HTTP")
+  } finally {
+    clearTimeout(forceCloseTimer)
+  }
+
+  try {
+    await prisma.$disconnect()
+    logger.info("Conexión a la base de datos cerrada")
+  } catch (err) {
+    process.exitCode = 1
+    logger.error({ err }, "Error al desconectar Prisma")
   }
 }
 
-// `once`: un segundo Ctrl+C mata el proceso inmediatamente
 process.once("SIGINT", () => void shutdown("SIGINT"))
 process.once("SIGTERM", () => void shutdown("SIGTERM"))
 
 process.on("unhandledRejection", (reason) => {
-  logger.error({ err: reason }, "Unhandled Rejection")
-  void shutdown("unhandledRejection", 1)
+  logger.error({ err: reason }, "Promesa rechazada sin gestionar")
+  void shutdown("Unhandled rejection", 1)
 })
 
 process.on("uncaughtException", (err) => {
-  logger.error({ err }, "Uncaught Exception")
-  void shutdown("uncaughtException", 1)
+  logger.fatal({ err }, "Excepción no capturada")
+  void shutdown("Uncaught exception", 1)
 })
-
-
-// npm run db:migrate -- --name crear_clientes

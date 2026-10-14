@@ -15,8 +15,10 @@ vi.mock("../../src/lib/prisma.js", () => ({
       create: vi.fn(),
       findUnique: vi.fn(),
       findMany: vi.fn(),
+      count: vi.fn(),
       update: vi.fn(),
     },
+    $transaction: vi.fn(),
   },
 }))
 
@@ -26,7 +28,7 @@ describe("ProveedorService.obtenerTodos", () => {
     vi.clearAllMocks()
   })
 
-  it("debería devolver todos los proveedores ordenados por nombre", async () => {
+  it("debería devolver una página de proveedores y el total", async () => {
     const proveedores = [
       {
         id: 1,
@@ -42,17 +44,26 @@ describe("ProveedorService.obtenerTodos", () => {
       },
     ]
 
-    vi.mocked(prisma.proveedor.findMany).mockResolvedValue(proveedores)
+    vi.mocked(prisma.$transaction).mockResolvedValue([proveedores, 12] as never)
 
-    const resultado = await proveedorService.obtenerTodos()
+    const resultado = await proveedorService.obtenerTodos(2, 2)
 
-    expect(resultado).toEqual(proveedores)
-
-    expect(prisma.proveedor.findMany).toHaveBeenCalledWith({
-      orderBy: {
-        nombre: "asc",
+    expect(resultado).toEqual({
+      data: proveedores,
+      pagination: {
+        page: 2,
+        pageSize: 2,
+        total: 12,
+        totalPages: 6,
       },
     })
+
+    expect(prisma.proveedor.findMany).toHaveBeenCalledWith({
+      orderBy: { nombre: "asc" },
+      skip: 2,
+      take: 2,
+    })
+    expect(prisma.proveedor.count).toHaveBeenCalledOnce()
   })
 })
 

@@ -4,12 +4,25 @@ import { ProveedorNoExisteError, ProveedorYaExisteError } from "./proveedores.er
 import type { CreateProveedorInput, UpdateProveedorInput } from "./proveedores.schemas.js"
 
 class ProveedorService {
-  async obtenerTodos() {
-    return prisma.proveedor.findMany({
-      orderBy: {
-        nombre: "asc"
-      }
-    })
+  async obtenerTodos(page: number, pageSize: number) {
+    const [proveedores, total] = await prisma.$transaction([
+      prisma.proveedor.findMany({
+        orderBy: { nombre: "asc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.proveedor.count(),
+    ])
+
+    return {
+      data: proveedores,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    }
   }
 
   async obtenerPorId(id: number) {

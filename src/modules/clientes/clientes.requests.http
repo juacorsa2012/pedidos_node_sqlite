@@ -12,7 +12,7 @@ Content-Type: application/json
 
 ### Obtener todos los clientes
 
-GET  {{clientesUrl}} 
+GET  {{clientesUrl}}?page=1&pageSize=10
 
 
 ### Obtener un cliente

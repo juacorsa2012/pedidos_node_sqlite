@@ -4,20 +4,28 @@ import { prisma } from "../../src/lib/prisma.js"
 import { ClienteNoExisteError, ClienteYaExisteError } from "../../src/modules/clientes/clientes.errors.js"
 import clienteService from "../../src/modules/clientes/clientes.service.js"
 
+const prismaError = (code: string, message = "Prisma error") =>
+  new Prisma.PrismaClientKnownRequestError(message, {
+    code,
+    clientVersion: "7.10.0",
+  })
+
 vi.mock("../../src/lib/prisma.js", () => ({
   prisma: {
     cliente: {
       create: vi.fn(),
       findUnique: vi.fn(),
       findMany: vi.fn(),
+      count: vi.fn(),
       update: vi.fn()
     },
+    $transaction: vi.fn(),
   },
 }))
 
 describe("ClienteService.registrar", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
   })
 
   it("debería registrar un cliente correctamente", async () => {
@@ -37,29 +45,25 @@ describe("ClienteService.registrar", () => {
   })
 
   it("debería lanzar ClienteYaExisteError si el cliente ya existe", async () => {
-    const error = new Prisma.PrismaClientKnownRequestError(
-      "Unique constraint failed",
-      {
-        code: "P2002",
-        clientVersion: "7.10.0",
-      }
-    )
+    const error = prismaError("P2002", "Unique constraint failed")
 
     vi.mocked(prisma.cliente.create).mockRejectedValue(error)
 
     await expect(clienteService.registrar({ nombre: "CLIENTE 1" })).rejects.toBeInstanceOf(ClienteYaExisteError)
   })
 
+  it("debería propagar errores de Prisma distintos de P2002", async () => {
+    const error = prismaError("P1001", "Database unavailable")
+    vi.mocked(prisma.cliente.create).mockRejectedValue(error)
 
-
-
-
+    await expect(clienteService.registrar({ nombre: "CLIENTE 1" })).rejects.toBe(error)
+  })
 })
 
 
 describe("ClienteService.obtenerPorId", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
   })
 
   it("debería devolver el cliente si existe el cliente", async () => {
@@ -93,43 +97,56 @@ describe("ClienteService.obtenerPorId", () => {
 
 describe("ClienteService.obtenerTodos", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
   })
 
-  it("debería devolver todos los clientes ordenados por nombre", async () => {
+  it("debería devolver una página y el total de clientes", async () => {
     const clientes = [
       { id: 1, nombre: "CLIENTE 1", createdAt: new Date(), updatedAt: new Date() },
       { id: 2, nombre: "CLIENTE 2", createdAt: new Date(), updatedAt: new Date() },
     ]
-    
-    vi.mocked(prisma.cliente.findMany).mockResolvedValue(clientes)
+    vi.mocked(prisma.$transaction).mockResolvedValue([clientes, 12] as never)
 
-    const resultado = await clienteService.obtenerTodos()
+    const resultado = await clienteService.obtenerTodos(2, 2)
 
-    expect(resultado).toEqual(clientes)
-
-    expect(prisma.cliente.findMany).toHaveBeenCalledWith({
-      orderBy: {
-        nombre: "asc",
+    expect(resultado).toEqual({
+      data: clientes,
+      pagination: {
+        page: 2,
+        pageSize: 2,
+        total: 12,
+        totalPages: 6,
       },
     })
-  })  
 
-  it("debería devolver un array vacío si no hay clientes", async () => {
-    vi.mocked(prisma.cliente.findMany).mockResolvedValue([])
-
-    const resultado = await clienteService.obtenerTodos()
-
-    expect(resultado).toEqual([])
     expect(prisma.cliente.findMany).toHaveBeenCalledWith({
       orderBy: { nombre: "asc" },
+      skip: 2,
+      take: 2,
+    })
+    expect(prisma.cliente.count).toHaveBeenCalledOnce()
+  })
+
+  it("debería devolver un array vacío si no hay clientes", async () => {
+    vi.mocked(prisma.$transaction).mockResolvedValue([[], 0] as never)
+
+    const resultado = await clienteService.obtenerTodos(1, 10)
+
+    expect(resultado).toEqual({
+      data: [],
+      pagination: {
+        page: 1,
+        pageSize: 10,
+        total: 0,
+        totalPages: 0,
+      },
     })
   })
 })
 
 describe("ClienteService.actualizar", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
   })
 
   it("debería actualizar un cliente existente", async () => {
@@ -156,13 +173,7 @@ describe("ClienteService.actualizar", () => {
   })
 
   it("debería lanzar ClienteNoExisteError si el cliente no existe", async () => {
-    const error = new Prisma.PrismaClientKnownRequestError(
-      "Record not found",
-      {
-        code: "P2025",
-        clientVersion: "7.10.0",
-      }
-    )
+    const error = prismaError("P2025", "Record not found")
 
     vi.mocked(prisma.cliente.update).mockRejectedValue(error)
 
@@ -172,5 +183,23 @@ describe("ClienteService.actualizar", () => {
         { nombre: "CLIENTE ACTUALIZADO" }
       )
     ).rejects.toBeInstanceOf(ClienteNoExisteError)
+  })
+
+  it("debería lanzar ClienteYaExisteError si se actualiza con un nombre duplicado", async () => {
+    const error = prismaError("P2002", "Unique constraint failed")
+    vi.mocked(prisma.cliente.update).mockRejectedValue(error)
+
+    await expect(
+      clienteService.actualizar(1, { nombre: "CLIENTE EXISTENTE" })
+    ).rejects.toBeInstanceOf(ClienteYaExisteError)
+  })
+
+  it("debería propagar errores de Prisma inesperados", async () => {
+    const error = prismaError("P1001", "Database unavailable")
+    vi.mocked(prisma.cliente.update).mockRejectedValue(error)
+
+    await expect(
+      clienteService.actualizar(1, { nombre: "CLIENTE ACTUALIZADO" })
+    ).rejects.toBe(error)
   })
 })

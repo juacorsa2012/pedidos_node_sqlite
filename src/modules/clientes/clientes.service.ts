@@ -4,12 +4,25 @@ import { ClienteNoExisteError, ClienteYaExisteError } from "./clientes.errors.js
 import { Prisma } from "../../../generated/prisma/client.js"
 
 class ClienteService {
-  async obtenerTodos() {
-    return prisma.cliente.findMany({
-      orderBy: {
-        nombre: "asc"
-      }
-    })
+  async obtenerTodos(page: number, pageSize: number) {
+    const [clientes, total] = await prisma.$transaction([
+      prisma.cliente.findMany({
+        orderBy: { nombre: "asc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.cliente.count(),
+    ])
+
+    return {
+      data: clientes,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    }
   }
 
   async obtenerPorId(id: number) {
@@ -18,33 +31,33 @@ class ClienteService {
     return cliente
   }
 
- async actualizar(id: number, { nombre }: UpdateClienteInput) {
-  try {
-    return await prisma.cliente.update({
-      where: { id },
-      data: { nombre }
-    })
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") throw new ClienteYaExisteError()
-      if (error.code === "P2025") throw new ClienteNoExisteError()
+  async actualizar(id: number, { nombre }: UpdateClienteInput) {
+    try {
+      return await prisma.cliente.update({
+        where: { id },
+        data: { nombre }
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") throw new ClienteYaExisteError()
+        if (error.code === "P2025") throw new ClienteNoExisteError()
+      }
+      throw error
     }
-    throw error
   }
-}
 
   async registrar({ nombre }: CreateClienteInput) {
-  try {
-    return await prisma.cliente.create({ data: { nombre } })
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-       if (error.code === "P2002") {
-        throw new ClienteYaExisteError()
-      }    
+    try {
+      return await prisma.cliente.create({ data: { nombre } })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          throw new ClienteYaExisteError()
+        }
+      }
+      throw error
     }
-    throw error
   }
- }
 }
 
 export default new ClienteService()
