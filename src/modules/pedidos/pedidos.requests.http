@@ -1,0 +1,48 @@
+@baseUrl = http://localhost:3000/api
+@pedidosUrl = {{baseUrl}}/pedidos
+@clienteId = 1
+@proveedorId = 1
+@pedidoId = 1
+
+### Obtener una página de pedidos
+GET {{pedidosUrl}}?page=1&pageSize=10
+
+### Filtrar pedidos por cliente
+GET {{pedidosUrl}}?page=1&pageSize=10&clienteId={{clienteId}}
+
+### Filtrar pedidos por proveedor
+GET {{pedidosUrl}}?page=1&pageSize=10&proveedorId={{proveedorId}}
+
+### Filtrar pedidos por cliente y proveedor
+GET {{pedidosUrl}}?page=1&pageSize=10&clienteId={{clienteId}}&proveedorId={{proveedorId}}
+
+### Obtener un pedido por ID
+GET {{pedidosUrl}}/{{pedidoId}}
+
+### Registrar un pedido
+POST {{pedidosUrl}}
+Content-Type: application/json
+
+{
+  "unidades": 3,
+  "producto": "Producto de prueba",
+  "oferta": "Oferta de temporada",
+  "solicitadoPor": "Ana",
+  "observaciones": "Entregar por la mañana",
+  "clienteId": {{clienteId}},
+  "proveedorId": {{proveedorId}}
+}
+
+### Actualizar un pedido
+PUT {{pedidosUrl}}/{{pedidoId}}
+Content-Type: application/json
+
+{
+  "unidades": 5,
+  "producto": "Producto actualizado",
+  "oferta": null,
+  "solicitadoPor": "Ana",
+  "observaciones": "Nueva fecha de entrega",
+  "clienteId": {{clienteId}},
+  "proveedorId": {{proveedorId}}
+}
