@@ -45,3 +45,14 @@ model Pedido {
   @@index([clienteId])
   @@map("pedidos")
 }
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  nombre    String
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("usuarios")
+}

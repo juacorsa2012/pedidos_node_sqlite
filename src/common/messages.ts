@@ -7,5 +7,5 @@ export const commonMessages = {
   tamanoSolicitudInvalido: "El tamaño declarado de la solicitud no es válido",
   demasiadosParametros: "La solicitud contiene demasiados parámetros",
   charsetNoSoportado: "La codificación del cuerpo de la solicitud no está soportada",
-  encodingNoSoportado: "La codificación del contenido de la solicitud no está soportada",
+  encodingNoSoportado: "La codificación del contenido de la solicitud no está soportada",  
 } as const

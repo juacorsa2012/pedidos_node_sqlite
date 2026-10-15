@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { Prisma } from '../../generated/prisma/client.js'
+import { Prisma } from "../../generated/prisma/client.js"
 import { prisma } from "../../src/lib/prisma.js"
 import { ClienteNoExisteError, ClienteYaExisteError } from "../../src/modules/clientes/clientes.errors.js"
 import clienteService from "../../src/modules/clientes/clientes.service.js"

@@ -122,9 +122,10 @@ DATABASE_URL="file:./dev.db"
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:5173
 PAGE_SIZE_MAX=100
+# LOG_LEVEL=debug
 ```
 
-Las variables de entorno se validan mediante **Zod** al iniciar la aplicación. `CORS_ORIGIN` define el origen del frontend permitido por CORS y, si se omite, usa `http://localhost:5173`. `PAGE_SIZE_MAX` establece el tamaño máximo de página para clientes, proveedores y pedidos.
+Las variables de entorno se validan mediante **Zod** al iniciar la aplicación. `CORS_ORIGIN` define el origen del frontend permitido por CORS y, si se omite, usa `http://localhost:5173`. `PAGE_SIZE_MAX` establece el tamaño máximo de página para clientes, proveedores y pedidos. `LOG_LEVEL` es opcional; acepta `fatal`, `error`, `warn`, `info`, `debug`, `trace` o `silent`. Por defecto usa `debug` en desarrollo, `silent` en tests e `info` en producción.
 
 ## 🗄️ Base de datos
 

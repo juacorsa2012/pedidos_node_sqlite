@@ -1,9 +1,9 @@
-import type { NextFunction, Request, Response } from 'express'
+import type { NextFunction, Request, Response } from "express"
 import { ZodError } from "zod"
-import { StatusCodes } from 'http-status-codes'
+import { StatusCodes } from "http-status-codes"
 import { AppError } from "../common/errors/custom-errors.js"
 import { commonMessages } from "../common/messages.js"
-import { logger } from '../config/logger.js'
+import { logger } from "../config/logger.js"
 
 type RequestBodyError = Error & {
   type?: string

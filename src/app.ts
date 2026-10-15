@@ -10,6 +10,7 @@ import { AppError } from "./common/errors/custom-errors.js"
 import clientesRoutes from "./modules/clientes/clientes.routes.js"
 import proveedoresRoutes from "./modules/proveedores/proveedores.routes.js"
 import pedidosRoutes from "./modules/pedidos/pedidos.routes.js"
+import authRoutes from "./modules/auth/auth.routes.js"
 
 export const app = express()
 
@@ -20,6 +21,7 @@ app.use(cors({ origin: env.CORS_ORIGIN }))
 app.use("/api/clientes", clientesRoutes)
 app.use("/api/proveedores", proveedoresRoutes)
 app.use("/api/pedidos", pedidosRoutes)
+app.use("/api/auth", authRoutes)
 
 app.get("/health", (_: Request, res: Response) => {
   return sendResponse({

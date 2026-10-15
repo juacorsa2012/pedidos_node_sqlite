@@ -6,7 +6,6 @@ import proveedoresService from "./proveedores.service.js"
 import { createProveedorSchema, idParamSchema, listProveedoresQuerySchema, updateProveedorSchema } from "./proveedores.schemas.js"
 import { proveedorMessages as Message  } from "./proveedores.messages.js"
 
-
 type ProveedorService = typeof proveedoresService
 
 class ProveedorController {
@@ -65,4 +64,3 @@ class ProveedorController {
 }
 
 export default new ProveedorController(proveedoresService)
-
