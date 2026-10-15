@@ -5,7 +5,8 @@ export default defineConfig({
     environment: "node",
     fileParallelism: false,
     env: {
-      NODE_ENV: "test"
+      NODE_ENV: "test",
+      JWT_SECRET: "vitest-only-secret-not-for-production-use-0123456789",
     }
   }
 })

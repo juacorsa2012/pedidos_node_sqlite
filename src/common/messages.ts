@@ -10,4 +10,5 @@ export const commonMessages = {
   encodingNoSoportado: "La codificación del contenido de la solicitud no está soportada",  
   demasiadasSolicitudes: "Demasiadas solicitudes. Inténtalo de nuevo más tarde.",
   apiFuncionando: "API funcionando correctamente",
+  jwtSecretCorto: "JWT_SECRET debe tener al menos 43 caracteres"
 } as const

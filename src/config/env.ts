@@ -1,5 +1,6 @@
 import dotenv from "dotenv"
 import { z } from "zod"
+import { commonMessages as Message } from "../common/messages.js"
 
 const envFile = process.env.NODE_ENV === "test" ? ".env.test" : ".env"
 
@@ -12,7 +13,7 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().url().default("http://localhost:5173"),
   PAGE_SIZE_MAX: z.coerce.number().int().positive().default(100),
   DATABASE_URL: z.string().min(1),
-  JWT_SECRET: z.string().min(43, "JWT_SECRET debe tener al menos 43 caracteres"),
+  JWT_SECRET: z.string().min(43, Message.jwtSecretCorto),
 })
 
 const parsedEnv = envSchema.safeParse(process.env)
