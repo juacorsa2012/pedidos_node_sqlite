@@ -4,11 +4,20 @@ import { loginSchema, registerSchema } from "./auth.schemas.js"
 import { sendResponse } from "../../common/utils/response.js"
 import { StatusCodes } from "http-status-codes"
 import { authMessages as Message } from "./auth.messages.js"
+import type { AuthRequest } from "./auth.types.js"
 
 type AuthServiceType = typeof authService
 
 class AuthController {
   constructor(private authService: AuthServiceType) {}
+
+  async obtenerUsuarioActual(req: AuthRequest, res: Response) {
+    return sendResponse({
+      res,      
+      statusCode: StatusCodes.OK,
+      data: req.usuario
+    })       
+  }
 
   async registrar(req: Request, res: Response): Promise<Response> {
     const data = registerSchema.parse(req.body)

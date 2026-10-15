@@ -10,7 +10,6 @@ export class UsuarioYaExisteError extends AppError {
 
 export class NoAutorizadoError extends AppError {
   constructor() {
-    super(Message.credencialesIncorrectas, 401)
+    super(Message.credencialesIncorrectas, StatusCodes.UNAUTHORIZED)
   }
 }
-
